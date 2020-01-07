@@ -1,17 +1,28 @@
+# imports
 import os
 
 from peewee import Model, CharField, IntegerField, ForeignKeyField
 from playhouse.db_url import connect
+# from werkzeug.security import generate_pasword_hash, check_password_hash
+
+# ------------------------------
 
 db = connect(os.environ.get('DATABASE_URL', 'sqlite:///my_database.db'))
+# ------------------------------
+
 
 class Donor(Model):
+    #__tablename__ = "donor"
     name = CharField(max_length=255, unique=True)
+    password = CharField(max_length=255)
 
     class Meta:
         database = db
+#-------------------------------
+
 
 class Donation(Model):
+    #__tablename__ = "donation"
     value = IntegerField()
     donor = ForeignKeyField(Donor, backref='donations')
 
