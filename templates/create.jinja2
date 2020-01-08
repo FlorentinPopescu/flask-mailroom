@@ -1,0 +1,25 @@
+{% extends 'base.jinja2' %}
+
+{% block title %}Create donations from existing{% endblock %}
+
+{% block content %}
+
+<ul>
+<form method="POST">
+  <nav>
+      <a id="login" href="{{ url_for('select') }}">Donor login</a>
+  </nav >
+  <li><label for="name-input">Donor name:<input id="name-input" type="text" name="name-input"></li>
+  <li><label for="value-input">Donation amount:<input id="value-input" name="value-input"></li>
+  <input type="submit" value="enter donation">
+</form>
+
+<form method="GET">
+  {% if error %}<span class="error">{{ error }}<br>{% endif %}
+</form>
+
+</ul>
+{% endblock %}
+
+
+

@@ -43,6 +43,39 @@ def select():
             return render_template("select.jinja2")
 # ---------------------------------
 
+@app.route('/donations/create/', methods=['GET', 'POST'])
+def new_donation(): 
+    
+    #if "donor-name" not in session:
+    #    return redirect(url_for("login"))
+    
+    if request.method == "POST":
+        try:
+            donor = Donor.select().where(Donor.name == request.form['name-input']).get()
+        except Donor.DoesNotExist:
+             return render_template("create.jinja2", error="donor not in records")
+       
+        try:
+            value = request.form['value-input']
+            if not value or not value.isnumeric():
+                raise ValueError()
+        except ValueError: 
+                return render_template("create.jinja2", error="donation amount missing or not a number")
+       
+        #if donor.name == session['donor-name']:
+        
+        new_donation = Donation(donor=donor, value=value)
+        new_donation.save()
+        session.pop("donor-name", None)
+        
+        return redirect(url_for("all"))
+        #else:
+        #    return render_template("create.jinja2", error="please login first") 
+    
+    else:
+        return render_template('create.jinja2', donations=Donation.select())
+# ---------------------------------
+
 # ---------------------------------
 if __name__ == "__main__":
     app.run(debug=True)
