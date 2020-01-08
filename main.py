@@ -48,24 +48,24 @@ def all():
 #        return render_template('create.jinja2', donations=Donation.select())
 # ---------------------------------
 
-@app.route('/donations/select/', methods=["GET", "POST"])
-def select():
-    if request.method == "GET":
-        donations = Donation.select()
-        try:
-            don = request.args.get('selected_donor', None)
-            if don is None:
-                return render_template('select.jinja2')
-            try:
-                s_donor = Donor.get(Donor.name == don)
-                selected_donor = [(donation.donor.name, donation.value) for donation in donations \
-                        if don is not None and donation.donor.name == don]
-                total_unique = len(selected_donor) 
-            except Donor.DoesNotExist:
-                return render_template('select.jinja2', error="reenter donor's name")
-            return render_template("unique.jinja2", selection=selected_donor, text=s_donor.name, counts=total_unique)
-        except ValueError:
-            return render_template("select.jinja2")
+#@app.route('/donations/select/', methods=["GET", "POST"])
+#def select():
+#    if request.method == "GET":
+#        donations = Donation.select()
+#        try:
+#            don = request.args.get('selected_donor', None)
+#            if don is None:
+#                return render_template('select.jinja2')
+#            try:
+#                s_donor = Donor.get(Donor.name == don)
+#                selected_donor = [(donation.donor.name, donation.value) for donation in donations \
+#                        if don is not None and donation.donor.name == don]
+#                total_unique = len(selected_donor) 
+#            except Donor.DoesNotExist:
+#                return render_template('select.jinja2', error="reenter donor's name")
+#            return render_template("unique.jinja2", selection=selected_donor, text=s_donor.name, counts=total_unique)
+#        except ValueError:
+#            return render_template("select.jinja2")
  
 # ----------------------------------
 if __name__ == "__main__":
