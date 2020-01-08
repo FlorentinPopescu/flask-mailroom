@@ -46,8 +46,8 @@ def select():
 @app.route('/donations/create/', methods=['GET', 'POST'])
 def new_donation(): 
     
-    #if "donor-name" not in session:
-    #    return redirect(url_for("login"))
+    if "donor-name" not in session:
+        return redirect(url_for("login"))
     
     if request.method == "POST":
         try:
@@ -62,19 +62,36 @@ def new_donation():
         except ValueError: 
                 return render_template("create.jinja2", error="donation amount missing or not a number")
        
-        #if donor.name == session['donor-name']:
-        
-        new_donation = Donation(donor=donor, value=value)
-        new_donation.save()
-        session.pop("donor-name", None)
-        
-        return redirect(url_for("all"))
-        #else:
-        #    return render_template("create.jinja2", error="please login first") 
+        if donor.name == session['donor-name']:
+            new_donation = Donation(donor=donor, value=value)
+            new_donation.save()
+            session.pop("donor-name", None)
+            return redirect(url_for("all"))
+        else:
+            return render_template("create.jinja2", error="please login first") 
     
     else:
         return render_template('create.jinja2', donations=Donation.select())
 # ---------------------------------
+
+@app.route("/donations/login/", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        try:
+            donor = Donor.select().where(Donor.name == request.form["name-input"]).get()
+
+            if pbkdf2_sha256.verify(request.form["password-input"], donor.password):
+                session["donor-name"] = request.form["name-input"]
+                return redirect(url_for("new_donation"))
+            else:
+                return render_template("login.jinja2", error="wrong password")
+            
+        except Donor.DoesNotExist:
+            return render_template("login.jinja2", error="wrong name")
+   
+    else:
+        return render_template("login.jinja2")
+
 
 # ---------------------------------
 if __name__ == "__main__":
