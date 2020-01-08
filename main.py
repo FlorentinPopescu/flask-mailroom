@@ -10,7 +10,8 @@ from model import Donor, Donation
 # ----------------------------------
 
 app = Flask(__name__)
-# app.secret_key = b"\xe0\x95\xf2`W8'X,2\xfc\x88Z\x8c\x97\xad~1\xd8k\xbb\xaf\xd7\xab"
+#app.secret_key = b"\xe0\x95\xf2`W8'X,2\xfc\x88Z\x8c\x97\xad~1\xd8k\xbb\xaf\xd7\xab"
+
 app.secret_key = os.environ.get('SECRET_KEY').encode()
 
 # ----------------------------------
@@ -26,15 +27,12 @@ def all():
 # ----------------------------------    
 
 @app.route('/donations/create/', methods=['GET', 'POST'])
-def new_donation(): 
-    if "donor-name" not in session:
-        return redirect(url_for("login"))
-    
+def new_donation():
     if request.method == "POST":
         try:
             donor = Donor.select().where(Donor.name == request.form['name-input']).get()
         except Donor.DoesNotExist:
-             return render_template("create.jinja2", error="donor not in records")
+            return render_template("create.jinja2", error="donor not in records")
        
         try:
             value = request.form['value-input']
@@ -43,36 +41,12 @@ def new_donation():
         except ValueError: 
                 return render_template("create.jinja2", error="donation amount missing or not a number")
        
-        if donor.name == session['donor-name']:
-            new_donation = Donation(donor=donor, value=value)
-            new_donation.save()
-            session.pop("donor-name", None)
-            return redirect(url_for("all"))
-        else:
-            return render_template("create.jinja2", error="please login first") 
-    
+        new_donation = Donation(donor=donor, value=value)
+        new_donation.save()
+      
     else:
         return render_template('create.jinja2', donations=Donation.select())
 # ---------------------------------
- 
-@app.route("/donations/login/", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        try:
-            donor = Donor.select().where(Donor.name == request.form["name-input"]).get()
-
-            if pbkdf2_sha256.verify(request.form["password-input"], donor.password):
-                session["donor-name"] = request.form["name-input"]
-                return redirect(url_for("new_donation"))
-            else:
-                return render_template("login.jinja2", error="wrong password")
-            
-        except Donor.DoesNotExist:
-            return render_template("login.jinja2", error="wrong name")
-   
-    else:
-        return render_template("login.jinja2")
-# -------------------------------- 
 
 @app.route('/donations/select/', methods=["GET", "POST"])
 def select():
@@ -96,7 +70,6 @@ def select():
 # ----------------------------------
 if __name__ == "__main__":
     app.run(debug=True)
-    
     #port = int(os.environ.get("PORT", 6738))
     #app.run(host='0.0.0.0', port=port)
 
