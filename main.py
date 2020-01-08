@@ -26,26 +26,26 @@ def all():
     return render_template('donations.jinja2', donations=Donation.select())
 # ----------------------------------    
 
-@app.route('/donations/create/', methods=['GET', 'POST'])
-def new_donation():
-    if request.method == "POST":
-        try:
-            donor = Donor.select().where(Donor.name == request.form['name-input']).get()
-        except Donor.DoesNotExist:
-            return render_template("create.jinja2", error="donor not in records")
-       
-        try:
-            value = request.form['value-input']
-            if not value or not value.isnumeric():
-                raise ValueError()
-        except ValueError: 
-                return render_template("create.jinja2", error="donation amount missing or not a number")
-       
-        new_donation = Donation(donor=donor, value=value)
-        new_donation.save()
-      
-    else:
-        return render_template('create.jinja2', donations=Donation.select())
+#@app.route('/donations/create/', methods=['GET', 'POST'])
+#def new_donation():
+#    if request.method == "POST":
+#        try:
+#            donor = Donor.select().where(Donor.name == request.form['name-input']).get()
+#        except Donor.DoesNotExist:
+#            return render_template("create.jinja2", error="donor not in records")
+#       
+#        try:
+#            value = request.form['value-input']
+#            if not value or not value.isnumeric():
+#                raise ValueError()
+#        except ValueError: 
+#                return render_template("create.jinja2", error="donation amount missing or not a number")
+#       
+#        new_donation = Donation(donor=donor, value=value)
+#        new_donation.save()
+#      
+#    else:
+#        return render_template('create.jinja2', donations=Donation.select())
 # ---------------------------------
 
 @app.route('/donations/select/', methods=["GET", "POST"])
