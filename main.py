@@ -5,7 +5,7 @@ import base64
 from flask import Flask, render_template, request, redirect, url_for, session
 from passlib.hash import pbkdf2_sha256
 
-from model import Donation 
+from model import Donor, Donation
 # ---------------------------------
 
 app = Flask(__name__)
